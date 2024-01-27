@@ -1,0 +1,5 @@
+Events:
+  MyEvent:
+    Event: Animation_Start
+    Actions:
+      - "[command] say test"
