@@ -17,7 +17,6 @@ public enum CaseEvent {
             String formattedName = name.toUpperCase();
             return CaseEvent.valueOf(formattedName);
         } catch (IllegalArgumentException e) {
-            e.printStackTrace();
             return null;
         }
     }
