@@ -1,4 +1,4 @@
-Events:
+Events: # See wiki -> https://wiki.jodexindustries.space/docs/DonateCase/Addons/dc-event-manager
   MyEvent:
     Event: Animation_Start
     Actions:
