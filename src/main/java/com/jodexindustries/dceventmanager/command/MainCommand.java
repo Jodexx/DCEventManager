@@ -1,8 +1,8 @@
 package com.jodexindustries.dceventmanager.command;
 
 import com.jodexindustries.dceventmanager.listener.EventListener;
-import com.jodexindustries.donatecase.api.SubCommand;
-import com.jodexindustries.donatecase.api.SubCommandType;
+import com.jodexindustries.donatecase.api.data.SubCommand;
+import com.jodexindustries.donatecase.api.data.SubCommandType;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
