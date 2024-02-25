@@ -2,7 +2,9 @@ package com.jodexindustries.dceventmanager;
 
 import com.jodexindustries.dceventmanager.command.MainCommand;
 import com.jodexindustries.dceventmanager.data.CaseEvent;
-import com.jodexindustries.dceventmanager.data.EventData;
+import com.jodexindustries.dceventmanager.data.CasedEventData;
+import com.jodexindustries.dceventmanager.data.DefaultEventData;
+import com.jodexindustries.dceventmanager.data.interfaces.EventData;
 import com.jodexindustries.dceventmanager.listener.EventListener;
 import com.jodexindustries.donatecase.api.SubCommandManager;
 import org.bukkit.configuration.ConfigurationSection;
@@ -46,7 +48,13 @@ public final class Main extends JavaPlugin {
                 continue;
             }
             List<String> actions = section.getStringList(event + ".Actions");
-            EventData data = new EventData(caseEvent, actions);
+            String caseName = section.getString(event + ".Case");
+            EventData data;
+            if(caseName == null || caseName.isEmpty()) {
+                data = new DefaultEventData(caseEvent, actions);
+            } else {
+                data = new CasedEventData(caseEvent, actions,caseName);
+            }
             List<EventData> list = new ArrayList<>();
             if(eventMap.get(caseEvent) != null) {
                 list = eventMap.get(caseEvent);

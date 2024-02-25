@@ -1,7 +1,9 @@
 package com.jodexindustries.dceventmanager.listener;
 
 import com.jodexindustries.dceventmanager.data.CaseEvent;
-import com.jodexindustries.dceventmanager.data.EventData;
+import com.jodexindustries.dceventmanager.data.CasedEventData;
+import com.jodexindustries.dceventmanager.data.interfaces.CaseEventData;
+import com.jodexindustries.dceventmanager.data.interfaces.EventData;
 import com.jodexindustries.donatecase.api.Case;
 import com.jodexindustries.donatecase.api.data.CaseData;
 import com.jodexindustries.donatecase.api.events.*;
@@ -22,6 +24,12 @@ public class EventListener implements Listener {
         CaseEvent event = CaseEvent.ANIMATION_END;
         List<EventData> list =  eventMap.getOrDefault(event, new ArrayList<>());
         for (EventData data : list) {
+            if(data instanceof CasedEventData) {
+                CaseEventData caseEventData = (CaseEventData) data;
+                if(!caseEventData.getCase().equalsIgnoreCase(e.getCaseData().getCaseName())) {
+                    continue;
+                }
+            }
             executeActions(replaceList(data.getActions(),
                     "%player%", e.getPlayer().getName(),
                     "%case%", e.getCaseData().getCaseName(),
@@ -36,6 +44,12 @@ public class EventListener implements Listener {
         CaseEvent event = CaseEvent.ANIMATION_PRE_START;
         List<EventData> list =  eventMap.getOrDefault(event, new ArrayList<>());
         for (EventData data : list) {
+            if(data instanceof CasedEventData) {
+                CaseEventData caseEventData = (CaseEventData) data;
+                if(!caseEventData.getCase().equalsIgnoreCase(e.getCaseData().getCaseName())) {
+                    continue;
+                }
+            }
             executeActions(replaceList(data.getActions(),
                     "%player%", e.getPlayer().getName(),
                     "%case%", e.getCaseData().getCaseName(),
@@ -61,6 +75,12 @@ public class EventListener implements Listener {
         CaseEvent event = CaseEvent.ANIMATION_START;
         List<EventData> list =  eventMap.getOrDefault(event, new ArrayList<>());
         for (EventData data : list) {
+            if(data instanceof CasedEventData) {
+                CaseEventData caseEventData = (CaseEventData) data;
+                if(!caseEventData.getCase().equalsIgnoreCase(e.getCaseData().getCaseName())) {
+                    continue;
+                }
+            }
             executeActions(replaceList(data.getActions(),
                     "%player%", e.getPlayer().getName(),
                     "%case%", e.getCaseData().getCaseName(),
@@ -77,6 +97,12 @@ public class EventListener implements Listener {
         CaseData caseData = Case.getCase(e.getCaseType());
         String title = caseData != null ? caseData.getCaseTitle() : "null";
         for (EventData data : list) {
+            if(data instanceof CasedEventData) {
+                CaseEventData caseEventData = (CaseEventData) data;
+                if(!caseEventData.getCase().equalsIgnoreCase(e.getCaseType())) {
+                    continue;
+                }
+            }
             executeActions(replaceList(data.getActions(),
                     "%player%", e.getPlayer().getName(),
                     "%case%", e.getCaseType(),
@@ -91,6 +117,12 @@ public class EventListener implements Listener {
         CaseData caseData = Case.getCase(e.getCaseType());
         String title = caseData != null ? caseData.getCaseTitle() : "null";
         for (EventData data : list) {
+            if(data instanceof CasedEventData) {
+                CaseEventData caseEventData = (CaseEventData) data;
+                if(!caseEventData.getCase().equalsIgnoreCase(e.getCaseType())) {
+                    continue;
+                }
+            }
             executeActions(replaceList(data.getActions(),
                     "%player%", e.getPlayer().getName(),
                     "%case%", e.getCaseType(),
@@ -105,6 +137,12 @@ public class EventListener implements Listener {
         CaseData caseData = Case.getCase(e.getCaseType());
         String title = caseData != null ? caseData.getCaseTitle() : "null";
         for (EventData data : list) {
+            if(data instanceof CasedEventData) {
+                CaseEventData caseEventData = (CaseEventData) data;
+                if(!caseEventData.getCase().equalsIgnoreCase(e.getCaseType())) {
+                    continue;
+                }
+            }
             executeActions(replaceList(data.getActions(),
                     "%player%", e.getPlayer().getName(),
                     "%case%", e.getCaseType(),
