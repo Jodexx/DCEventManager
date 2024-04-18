@@ -10,7 +10,8 @@ public enum CaseEvent {
     PRE_OPEN_CASE,
     SUB_COMMAND_REGISTERED,
     DONATE_CASE_DISABLE,
-    DONATE_CASE_ENABLE;
+    DONATE_CASE_ENABLE,
+    CASE_GUI_CLICK;
 
     public static CaseEvent fromString(String name) {
         try {

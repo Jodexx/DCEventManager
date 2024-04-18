@@ -2,8 +2,10 @@ package com.jodexindustries.dceventmanager.listener;
 
 import com.jodexindustries.dceventmanager.data.CaseEvent;
 import com.jodexindustries.dceventmanager.data.CasedEventData;
+import com.jodexindustries.dceventmanager.data.GuiClickEventData;
 import com.jodexindustries.dceventmanager.data.interfaces.CaseEventData;
 import com.jodexindustries.dceventmanager.data.interfaces.EventData;
+import com.jodexindustries.dceventmanager.data.interfaces.GuiEventData;
 import com.jodexindustries.donatecase.api.Case;
 import com.jodexindustries.donatecase.api.data.CaseData;
 import com.jodexindustries.donatecase.api.events.*;
@@ -176,6 +178,27 @@ public class EventListener implements Listener {
             executeActions(data.getActions());
         }
     }
+    @EventHandler
+    public void onInventoryClick(CaseGuiClickEvent e) {
+        CaseEvent event = CaseEvent.CASE_GUI_CLICK;
+        List<EventData> list =  eventMap.getOrDefault(event, new ArrayList<>());
+        CaseData caseData = Case.getCase(e.getCaseType());
+        String title = caseData != null ? caseData.getCaseTitle() : "null";
+        for (EventData data : list) {
+            if(data instanceof GuiClickEventData) {
+                GuiEventData caseEventData = (GuiEventData) data;
+                if(!caseEventData.getCase().equalsIgnoreCase(e.getCaseType()) || e.getSlot() != caseEventData.getSlot()) {
+                    continue;
+                }
+            }
+            executeActions(replaceList(data.getActions(),
+                    "%player%", e.getWhoClicked().getName(),
+                    "%case%", e.getCaseType(),
+                    "%casetitle%", title
+            ));
+        }
+    }
+
     private void executeActions(List<String> actions) {
         for (String action : actions) {
             if (action.startsWith("[command] ")) {

@@ -4,6 +4,7 @@ import com.jodexindustries.dceventmanager.command.MainCommand;
 import com.jodexindustries.dceventmanager.data.CaseEvent;
 import com.jodexindustries.dceventmanager.data.CasedEventData;
 import com.jodexindustries.dceventmanager.data.DefaultEventData;
+import com.jodexindustries.dceventmanager.data.GuiClickEventData;
 import com.jodexindustries.dceventmanager.data.interfaces.EventData;
 import com.jodexindustries.dceventmanager.listener.EventListener;
 import com.jodexindustries.donatecase.api.SubCommandManager;
@@ -49,9 +50,12 @@ public final class Main extends JavaPlugin {
             }
             List<String> actions = section.getStringList(event + ".Actions");
             String caseName = section.getString(event + ".Case");
+            int slot = section.getInt(event + ".Slot", -1);
             EventData data;
             if(caseName == null || caseName.isEmpty()) {
                 data = new DefaultEventData(caseEvent, actions);
+            } else if(slot != -1) {
+                data = new GuiClickEventData(caseEvent, actions, caseName, slot);
             } else {
                 data = new CasedEventData(caseEvent, actions,caseName);
             }
