@@ -52,12 +52,16 @@ public final class Main extends JavaPlugin {
             String caseName = section.getString(event + ".Case");
             int slot = section.getInt(event + ".Slot", -1);
             EventData data;
-            if(caseName == null || caseName.isEmpty()) {
-                data = new DefaultEventData(caseEvent, actions);
-            } else if(slot != -1) {
-                data = new GuiClickEventData(caseEvent, actions, caseName, slot);
-            } else {
-                data = new CasedEventData(caseEvent, actions,caseName);
+            switch (caseEvent.type) {
+                case CASED:
+                    data = new CasedEventData(caseEvent,actions, caseName);
+                    break;
+                case GUI:
+                    data = new GuiClickEventData(caseEvent, actions, caseName, slot);
+                    break;
+                default:
+                    data = new DefaultEventData(caseEvent, actions);
+                    break;
             }
             List<EventData> list = new ArrayList<>();
             if(eventMap.get(caseEvent) != null) {
