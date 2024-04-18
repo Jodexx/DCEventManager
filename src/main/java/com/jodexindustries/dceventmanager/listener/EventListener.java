@@ -79,7 +79,7 @@ public class EventListener implements Listener {
         for (EventData data : list) {
             if(data instanceof CasedEventData) {
                 CaseEventData caseEventData = (CaseEventData) data;
-                if(!caseEventData.getCase().equalsIgnoreCase(e.getCaseData().getCaseName())) {
+                if(caseEventData.getCase() != null && !caseEventData.getCase().equalsIgnoreCase(e.getCaseData().getCaseName())) {
                     continue;
                 }
             }
@@ -101,7 +101,7 @@ public class EventListener implements Listener {
         for (EventData data : list) {
             if(data instanceof CasedEventData) {
                 CaseEventData caseEventData = (CaseEventData) data;
-                if(!caseEventData.getCase().equalsIgnoreCase(e.getCaseType())) {
+                if(caseEventData.getCase() != null && !caseEventData.getCase().equalsIgnoreCase(e.getCaseType())) {
                     continue;
                 }
             }
@@ -121,7 +121,7 @@ public class EventListener implements Listener {
         for (EventData data : list) {
             if(data instanceof CasedEventData) {
                 CaseEventData caseEventData = (CaseEventData) data;
-                if(!caseEventData.getCase().equalsIgnoreCase(e.getCaseType())) {
+                if(caseEventData.getCase() != null && !caseEventData.getCase().equalsIgnoreCase(e.getCaseType())) {
                     continue;
                 }
             }
@@ -141,7 +141,7 @@ public class EventListener implements Listener {
         for (EventData data : list) {
             if(data instanceof CasedEventData) {
                 CaseEventData caseEventData = (CaseEventData) data;
-                if(!caseEventData.getCase().equalsIgnoreCase(e.getCaseType())) {
+                if(caseEventData.getCase() != null && !caseEventData.getCase().equalsIgnoreCase(e.getCaseType())) {
                     continue;
                 }
             }
@@ -187,7 +187,10 @@ public class EventListener implements Listener {
         for (EventData data : list) {
             if(data instanceof GuiClickEventData) {
                 GuiEventData caseEventData = (GuiEventData) data;
-                if(!caseEventData.getCase().equalsIgnoreCase(e.getCaseType()) || e.getSlot() != caseEventData.getSlot()) {
+                if ((caseEventData.getCase() != null && !caseEventData.getCase().equalsIgnoreCase(e.getCaseType()))) {
+                    continue;
+                }
+                if((e.getSlot() != -1 && e.getSlot() != caseEventData.getSlot())) {
                     continue;
                 }
             }
