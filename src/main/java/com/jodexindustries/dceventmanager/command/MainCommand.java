@@ -1,5 +1,6 @@
 package com.jodexindustries.dceventmanager.command;
 
+import com.jodexindustries.dceventmanager.bootstrap.Main;
 import com.jodexindustries.dceventmanager.listener.EventListener;
 import com.jodexindustries.donatecase.api.data.SubCommand;
 import com.jodexindustries.donatecase.api.data.SubCommandType;
@@ -8,13 +9,16 @@ import org.bukkit.command.CommandSender;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.jodexindustries.dceventmanager.Main.instance;
 
 public class MainCommand implements SubCommand {
+    private final Main main;
+    public MainCommand(Main main) {
+        this.main = main;
+    }
     @Override
     public void execute(CommandSender sender, String[] args) {
-        instance.reloadConfig();
-        instance.loadEvents();
+        main.getAddonConfig().reloadConfig();
+        main.getTools().loadEvents();
         sender.sendMessage(EventListener.rc("&aConfig and events reloaded!"));
     }
 

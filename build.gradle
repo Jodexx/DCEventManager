@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'com.jodexindustries'
-version = '1.0.3'
+version = '1.0.4'
 
 repositories {
     mavenCentral()
@@ -51,6 +51,9 @@ processResources {
     inputs.properties props
     filteringCharset 'UTF-8'
     filesMatching('plugin.yml') {
+        expand props
+    }
+    filesMatching('addon.yml') {
         expand props
     }
 }

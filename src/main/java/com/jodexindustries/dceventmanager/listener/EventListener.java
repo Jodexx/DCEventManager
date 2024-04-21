@@ -18,7 +18,7 @@ import org.bukkit.event.Listener;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.jodexindustries.dceventmanager.Main.eventMap;
+import static com.jodexindustries.dceventmanager.bootstrap.Tools.eventMap;
 
 public class EventListener implements Listener {
     @EventHandler
