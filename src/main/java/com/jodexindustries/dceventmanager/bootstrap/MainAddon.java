@@ -4,12 +4,12 @@ import com.jodexindustries.dceventmanager.command.MainCommand;
 import com.jodexindustries.dceventmanager.config.Config;
 import com.jodexindustries.dceventmanager.listener.EventListener;
 import com.jodexindustries.donatecase.api.CaseManager;
-import com.jodexindustries.donatecase.api.addon.JavaAddon;
+import com.jodexindustries.donatecase.api.addon.internal.InternalJavaAddon;
 import org.bukkit.Bukkit;
 
 import java.io.File;
 
-public final class MainAddon extends JavaAddon implements Main {
+public final class MainAddon extends InternalJavaAddon implements Main {
     public static MainAddon instance;
     private CaseManager api;
     public static Tools t;
