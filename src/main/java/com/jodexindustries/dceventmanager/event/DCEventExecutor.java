@@ -60,7 +60,7 @@ public class DCEventExecutor implements EventExecutor {
                 continue;
             }
 
-            executeActions(replaceList(data.getActions(), getPlaceholders(event)
+            executeActions(event, replaceList(data.getActions(), getPlaceholders(event)
             ));
 
         }
@@ -80,17 +80,23 @@ public class DCEventExecutor implements EventExecutor {
         return values;
     }
 
-    private void executeActions(List<String> actions) {
+    private void executeActions(Event event, List<String> actions) {
         for (String action : actions) {
             if (action.startsWith("[command]")) {
                 action = action.replaceFirst("\\[command] ", "");
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), rc(action));
             }
+
             if (action.startsWith("[broadcast]")) {
                 action = action.replaceFirst("\\[broadcast] ", "");
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     p.sendMessage(rc(action));
                 }
+            }
+
+            if (action.startsWith("[invoke]")) {
+                action = action.replaceFirst("\\[invoke] ", "");
+                Reflection.invokeMethodChain(event, action);
             }
         }
     }
