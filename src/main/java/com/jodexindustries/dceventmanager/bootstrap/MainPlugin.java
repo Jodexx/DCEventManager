@@ -1,32 +1,24 @@
 package com.jodexindustries.dceventmanager.bootstrap;
 
-import com.jodexindustries.dceventmanager.command.MainCommand;
 import com.jodexindustries.dceventmanager.config.Config;
-import com.jodexindustries.dceventmanager.listener.EventListener;
-import com.jodexindustries.donatecase.api.CaseManager;
+import com.jodexindustries.dceventmanager.utils.Tools;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class MainPlugin extends JavaPlugin implements Main {
-    public static MainPlugin instance;
-    private CaseManager api;
     public Config config;
     public Tools t;
 
     @Override
     public void onEnable() {
-        api = new CaseManager(this);
-        instance = this;
-        t = new Tools(this, getLogger());
-        config = new Config(getDataFolder());
-        saveDefaultConfig();
-        getServer().getPluginManager().registerEvents(new EventListener(), this);
-        api.getSubCommandManager().registerSubCommand("dcem", new MainCommand(this));
-        t.loadEvents();
+        t = new Tools(this);
+        config = new Config(this);
+        t.load();
     }
 
     @Override
     public void onDisable() {
-        api.getSubCommandManager().unregisterSubCommand("dcem");
+        t.unload();
     }
     @Override
     public Config getAddonConfig() {
@@ -36,6 +28,11 @@ public final class MainPlugin extends JavaPlugin implements Main {
     @Override
     public Tools getTools() {
         return t;
+    }
+
+    @Override
+    public Plugin getPlugin() {
+        return this;
     }
 
 }

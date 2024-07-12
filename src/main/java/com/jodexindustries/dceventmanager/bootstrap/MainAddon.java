@@ -1,37 +1,24 @@
 package com.jodexindustries.dceventmanager.bootstrap;
 
-import com.jodexindustries.dceventmanager.command.MainCommand;
 import com.jodexindustries.dceventmanager.config.Config;
-import com.jodexindustries.dceventmanager.listener.EventListener;
-import com.jodexindustries.donatecase.api.CaseManager;
+import com.jodexindustries.dceventmanager.utils.Tools;
 import com.jodexindustries.donatecase.api.addon.internal.InternalJavaAddon;
-import org.bukkit.Bukkit;
-
-import java.io.File;
+import org.bukkit.plugin.Plugin;
 
 public final class MainAddon extends InternalJavaAddon implements Main {
-    public static MainAddon instance;
-    private CaseManager api;
     public static Tools t;
     public Config config;
 
     @Override
     public void onEnable() {
-        instance = this;
-        api = getCaseAPI();
-        t = new Tools(this, getLogger());
-        config = new Config(getDataFolder());
-        if(!new File(getDataFolder(), "config.yml").exists()) {
-            saveResource("config.yml", false);
-        }
-        Bukkit.getServer().getPluginManager().registerEvents(new EventListener(), getDonateCase());
-        api.getSubCommandManager().registerSubCommand("dcem", new MainCommand(this));
-        t.loadEvents();
+        t = new Tools(this);
+        config = new Config(this);
+        t.load();
     }
 
     @Override
     public void onDisable() {
-        api.getSubCommandManager().unregisterSubCommand("dcem");
+        t.unload();
     }
 
     @Override
@@ -42,5 +29,10 @@ public final class MainAddon extends InternalJavaAddon implements Main {
     @Override
     public Tools getTools() {
         return t;
+    }
+
+    @Override
+    public Plugin getPlugin() {
+        return getDonateCase();
     }
 }
