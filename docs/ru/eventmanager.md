@@ -40,6 +40,9 @@ Events:
 ### Объявление
 Пример
 `- [broadcast] Hello!`
+### Вызов метода
+Пример
+`- [invoke] setCancelled(true)`
 
 ## Поддержка конкретного кейса
 Работает, только если у события есть методы `getCaseType` или `getCaseData`

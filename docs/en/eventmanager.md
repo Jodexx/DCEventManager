@@ -41,6 +41,9 @@ Example
 ### Broadcast
 Example
 `- [broadcast] Hello!`
+### Method invoke
+Example
+`- [invoke] setCancelled(true)`
 
 ## Case-Specific Support
 Works only if event has `getCaseType` or `getCaseData` methods
