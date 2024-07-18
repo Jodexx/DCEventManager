@@ -102,6 +102,15 @@ public class Reflection {
         return classes;
     }
 
+    public static boolean hasVar(Event event, String methodName) {
+        try {
+            event.getClass().getMethod(methodName);
+        } catch (NoSuchMethodException e) {
+            return false;
+        }
+        return true;
+    }
+
     @Nullable
     public static <T> T getVar(Event event, String methodName, Class<T> clazz) {
         T object = null;
@@ -157,9 +166,8 @@ public class Reflection {
                 event = m.invoke(event, args);
             }
             return event;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
         }
     }
 

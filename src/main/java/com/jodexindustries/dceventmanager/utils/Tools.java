@@ -58,6 +58,7 @@ public class Tools implements Listener {
                 Placeholder p = new Placeholder(name, method);
                 placeholders.add(p);
                 i++;
+                if(debug) main.getLogger().info("Placeholder " + placeholder + " for event " + event + " loaded");
             }
 
             placeholderMap.put(event.toUpperCase(), placeholders);
@@ -75,7 +76,7 @@ public class Tools implements Listener {
         for (String event : section.getKeys(false)) {
             String eventName = section.getString(event + ".Event");
             if(eventName == null || eventName.isEmpty()) {
-                main.getLogger().warning("Event " + event + " does not have an Event parameter");
+                main.getLogger().warning("Event management " + event + " does not have an Event parameter");
                 continue;
             }
             eventName = eventName.toUpperCase();
@@ -92,11 +93,13 @@ public class Tools implements Listener {
             list.add(data);
             eventMap.put(eventName, list);
             i++;
+            if(debug) main.getLogger().info("Event management " + event + " loaded");
         }
         main.getLogger().info("Loaded " + i + " event managements from " + eventMap.size() + " events");
     }
 
     public void registerEvents() {
+        unregisterEvents();
         ArrayList<Class<? extends Event>> classes = getClasses();
         PluginManager pluginManager = Bukkit.getPluginManager();
 
@@ -107,9 +110,7 @@ public class Tools implements Listener {
             pluginManager.registerEvent(clazz, this, EventPriority.NORMAL,
                     new DCEventExecutor(event, main), main.getPlugin());
             i++;
-            if(debug) {
-                main.getLogger().info("Event " + event + " registered");
-            }
+            if(debug) main.getLogger().info("Event " + event + " registered");
         }
 
         main.getLogger().info("Registered " + i + " events");

@@ -4,11 +4,13 @@ import com.jodexindustries.dceventmanager.bootstrap.Main;
 import com.jodexindustries.dceventmanager.data.EventData;
 import com.jodexindustries.dceventmanager.data.Placeholder;
 import com.jodexindustries.dceventmanager.utils.Reflection;
+import com.jodexindustries.donatecase.api.ActionManager;
+import com.jodexindustries.donatecase.api.data.CaseAction;
 import com.jodexindustries.donatecase.api.data.CaseData;
 import com.jodexindustries.donatecase.api.events.DonateCaseReloadEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.EventExecutor;
@@ -16,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static com.jodexindustries.dceventmanager.utils.Tools.eventMap;
 import static com.jodexindustries.dceventmanager.utils.Tools.placeholderMap;
@@ -34,8 +37,7 @@ public class DCEventExecutor implements EventExecutor {
         if (event instanceof DonateCaseReloadEvent) {
             main.getAddonConfig().reloadConfig();
             main.getAddonConfig().reloadPlaceholders();
-            main.getTools().loadPlaceholders();
-            main.getTools().loadEvents();
+            main.getTools().load();
             main.getLogger().info("Config reloaded");
         }
 
@@ -56,7 +58,7 @@ public class DCEventExecutor implements EventExecutor {
                 continue;
             }
 
-            if (slot != null && slot != data.getSlot()) {
+            if (data.getSlot() != -1 && slot != null && slot != data.getSlot()) {
                 continue;
             }
 
@@ -82,22 +84,35 @@ public class DCEventExecutor implements EventExecutor {
 
     private void executeActions(Event event, List<String> actions) {
         for (String action : actions) {
-            if (action.startsWith("[command]")) {
-                action = action.replaceFirst("\\[command] ", "");
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), rc(action));
+
+            // new implementation start
+            OfflinePlayer player = null;
+            if(Reflection.hasVar(event, "getWhoClicked")) {
+                player = Reflection.getVar(event, "getWhoClicked", OfflinePlayer.class);
+            } else if(Reflection.hasVar(event, "getPlayer")) {
+                player = Reflection.getVar(event, "getPlayer", OfflinePlayer.class);
             }
 
-            if (action.startsWith("[broadcast]")) {
-                action = action.replaceFirst("\\[broadcast] ", "");
-                for (Player p : Bukkit.getOnlinePlayers()) {
-                    p.sendMessage(rc(action));
+            if(player == null) player = Bukkit.getOfflinePlayer(UUID.randomUUID());
+
+            String temp = ActionManager.getByStart(action);
+
+            if(temp != null) {
+                String context = action.replace(temp, "").trim();
+                CaseAction caseAction = ActionManager.getRegisteredAction(temp);
+                if (caseAction != null) {
+                    caseAction.execute(player, context, 0);
+                    continue;
                 }
             }
+            // new implementation end
 
+            // old implementation start
             if (action.startsWith("[invoke]")) {
                 action = action.replaceFirst("\\[invoke] ", "");
                 Reflection.invokeMethodChain(event, action);
             }
+            // old implementation end
         }
     }
 
