@@ -1,6 +1,7 @@
 package com.jodexindustries.dceventmanager.utils;
 
 import com.jodexindustries.dceventmanager.bootstrap.Main;
+import com.jodexindustries.dceventmanager.config.Config;
 import com.jodexindustries.dceventmanager.data.EventData;
 import com.jodexindustries.dceventmanager.data.Placeholder;
 import com.jodexindustries.dceventmanager.event.DCEventExecutor;
@@ -23,12 +24,15 @@ public class Tools implements Listener {
     public static Map<String, List<Placeholder>> placeholderMap = new HashMap<>();
     public boolean debug = false;
     private final Main main;
+    private final Config config;
+
 
     public Tools(Main main) {
         this.main = main;
+        this.config = new Config(main);
     }
     public void load() {
-        debug = main.getAddonConfig().getConfig().getBoolean("Debug");
+        debug = config.getConfig().getBoolean("Debug");
         registerEvents();
         loadPlaceholders();
         loadEvents();
@@ -39,7 +43,7 @@ public class Tools implements Listener {
 
     public void loadPlaceholders() {
         placeholderMap.clear();
-        ConfigurationSection section = main.getAddonConfig().getPlaceholders().getConfigurationSection("Events");
+        ConfigurationSection section = config.getPlaceholders().getConfigurationSection("Events");
         if(section == null) return;
         int i = 0;
         for (String event : section.getKeys(false)) {
@@ -70,30 +74,31 @@ public class Tools implements Listener {
     public void loadEvents() {
         eventMap.clear();
 
-        ConfigurationSection section = main.getAddonConfig().getConfig().getConfigurationSection("Events");
-        if(section == null) return;
+        ConfigurationSection section = config.getConfig().getConfigurationSection("Events");
         int i = 0;
-        for (String event : section.getKeys(false)) {
-            String eventName = section.getString(event + ".Event");
-            if(eventName == null || eventName.isEmpty()) {
-                main.getLogger().warning("Event management " + event + " does not have an Event parameter");
-                continue;
-            }
-            eventName = eventName.toUpperCase();
+        if(section != null) {
+            for (String event : section.getKeys(false)) {
+                String eventName = section.getString(event + ".Event");
+                if (eventName == null || eventName.isEmpty()) {
+                    main.getLogger().warning("Event management " + event + " does not have an Event parameter");
+                    continue;
+                }
+                eventName = eventName.toUpperCase();
 
-            List<String> actions = section.getStringList(event + ".Actions");
-            String caseName = section.getString(event + ".Case");
-            int slot = section.getInt(event + ".Slot", -1);
-            EventData data = new EventData(actions, caseName, slot);
+                List<String> actions = section.getStringList(event + ".Actions");
+                String caseName = section.getString(event + ".Case");
+                int slot = section.getInt(event + ".Slot", -1);
+                EventData data = new EventData(actions, caseName, slot);
 
-            List<EventData> list = new ArrayList<>();
-            if(eventMap.get(eventName) != null) {
-                list = eventMap.get(eventName);
+                List<EventData> list = new ArrayList<>();
+                if (eventMap.get(eventName) != null) {
+                    list = eventMap.get(eventName);
+                }
+                list.add(data);
+                eventMap.put(eventName, list);
+                i++;
+                if (debug) main.getLogger().info("Event management " + event + " loaded");
             }
-            list.add(data);
-            eventMap.put(eventName, list);
-            i++;
-            if(debug) main.getLogger().info("Event management " + event + " loaded");
         }
         main.getLogger().info("Loaded " + i + " event managements from " + eventMap.size() + " events");
     }
@@ -108,7 +113,7 @@ public class Tools implements Listener {
         for (Class<? extends Event> clazz : classes) {
             String event = clazz.getSimpleName();
             pluginManager.registerEvent(clazz, this, EventPriority.NORMAL,
-                    new DCEventExecutor(event, main), main.getPlugin());
+                    new DCEventExecutor(event, this), main.getPlugin());
             i++;
             if(debug) main.getLogger().info("Event " + event + " registered");
         }
@@ -125,12 +130,19 @@ public class Tools implements Listener {
 
         try {
             classes = Reflection.getClassesForPackage(getClass().getClassLoader(),
-                    main.getAddonConfig().getConfig().getString("Package",
+                    config.getConfig().getString("Package",
                             "com.jodexindustries.donatecase.api.events"));
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
 
         return classes;
+    }
+
+    public void reloadConfig() {
+        config.reloadConfig();
+        config.reloadPlaceholders();
+        load();
+        main.getLogger().info("Config reloaded");
     }
 }
