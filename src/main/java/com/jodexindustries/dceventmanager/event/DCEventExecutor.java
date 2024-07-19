@@ -1,9 +1,9 @@
 package com.jodexindustries.dceventmanager.event;
 
-import com.jodexindustries.dceventmanager.bootstrap.Main;
 import com.jodexindustries.dceventmanager.data.EventData;
 import com.jodexindustries.dceventmanager.data.Placeholder;
 import com.jodexindustries.dceventmanager.utils.Reflection;
+import com.jodexindustries.dceventmanager.utils.Tools;
 import com.jodexindustries.donatecase.api.ActionManager;
 import com.jodexindustries.donatecase.api.data.CaseAction;
 import com.jodexindustries.donatecase.api.data.CaseData;
@@ -25,29 +25,25 @@ import static com.jodexindustries.dceventmanager.utils.Tools.placeholderMap;
 
 public class DCEventExecutor implements EventExecutor {
     public final String caseEvent;
-    public final Main main;
+    public final Tools tools;
 
-    public DCEventExecutor(String caseEvent, Main main) {
+    public DCEventExecutor(String caseEvent, Tools tools) {
         this.caseEvent = caseEvent;
-        this.main = main;
+        this.tools = tools;
     }
 
     @Override
     public void execute(@NotNull Listener listener, @NotNull Event event) {
         if (event instanceof DonateCaseReloadEvent) {
-            main.getAddonConfig().reloadConfig();
-            main.getAddonConfig().reloadPlaceholders();
-            main.getTools().load();
-            main.getLogger().info("Config reloaded");
+            tools.reloadConfig();
         }
 
         final List<EventData> list = eventMap.getOrDefault(caseEvent.toUpperCase(), new ArrayList<>());
         String caseType = Reflection.getVar(event, "getCaseType", String.class);
-        CaseData caseData;
         Integer slot = Reflection.getVar(event, "getSlot", Integer.class);
 
         if (caseType == null) {
-            caseData = Reflection.getVar(event, "getCaseData", CaseData.class);
+            CaseData caseData = Reflection.getVar(event, "getCaseData", CaseData.class);
             if (caseData != null) {
                 caseType = caseData.getCaseType();
             }
@@ -116,7 +112,7 @@ public class DCEventExecutor implements EventExecutor {
         }
     }
 
-    public static String rc(String text) {
+    private String rc(String text) {
         return ChatColor.translateAlternateColorCodes('&', text);
     }
 
