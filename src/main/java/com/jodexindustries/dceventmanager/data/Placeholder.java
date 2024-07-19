@@ -3,8 +3,8 @@ package com.jodexindustries.dceventmanager.data;
 public class Placeholder {
     private final String name;
     private final String method;
-    public Placeholder(String name, String method) {
 
+    public Placeholder(String name, String method) {
         this.name = name;
         this.method = method;
     }
@@ -15,13 +15,5 @@ public class Placeholder {
 
     public String getMethod() {
         return method;
-    }
-
-    @Override
-    public String toString() {
-        return "Placeholder{" +
-                "name='" + name + '\'' +
-                ", method='" + method + '\'' +
-                '}';
     }
 }
