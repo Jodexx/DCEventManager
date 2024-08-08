@@ -46,7 +46,10 @@ public class Reflection {
                 name = name.substring(0, name.length() - 6).replace('/', '.');
 
                 if (name.contains(pckgname)) {
-                    classes.add(Class.forName(name).asSubclass(Event.class));
+                    Class<?> clazz = Class.forName(name);
+                    if(Event.class.isAssignableFrom(clazz)) {
+                        classes.add(clazz.asSubclass(Event.class));
+                    }
                 }
             }
         }
