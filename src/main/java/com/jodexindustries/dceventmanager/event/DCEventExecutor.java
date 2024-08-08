@@ -4,8 +4,7 @@ import com.jodexindustries.dceventmanager.data.EventData;
 import com.jodexindustries.dceventmanager.data.Placeholder;
 import com.jodexindustries.dceventmanager.utils.Reflection;
 import com.jodexindustries.dceventmanager.utils.Tools;
-import com.jodexindustries.donatecase.api.ActionManager;
-import com.jodexindustries.donatecase.api.data.CaseAction;
+import com.jodexindustries.donatecase.api.Case;
 import com.jodexindustries.donatecase.api.data.CaseData;
 import com.jodexindustries.donatecase.api.events.DonateCaseReloadEvent;
 import org.bukkit.Bukkit;
@@ -19,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.jodexindustries.dceventmanager.utils.Tools.eventMap;
 import static com.jodexindustries.dceventmanager.utils.Tools.placeholderMap;
@@ -35,7 +35,8 @@ public class DCEventExecutor implements EventExecutor {
     @Override
     public void execute(@NotNull Listener listener, @NotNull Event event) {
         if (event instanceof DonateCaseReloadEvent) {
-            tools.reloadConfig();
+            DonateCaseReloadEvent reloadEvent = (DonateCaseReloadEvent) event;
+            if(reloadEvent.getType() == DonateCaseReloadEvent.Type.CONFIG) tools.reloadConfig();
         }
 
         final List<EventData> list = eventMap.getOrDefault(caseEvent.toUpperCase(), new ArrayList<>());
@@ -79,36 +80,26 @@ public class DCEventExecutor implements EventExecutor {
     }
 
     private void executeActions(Event event, List<String> actions) {
-        for (String action : actions) {
+        OfflinePlayer player = null;
+        if(Reflection.hasVar(event, "getWhoClicked")) {
+            player = Reflection.getVar(event, "getWhoClicked", OfflinePlayer.class);
+        } else if(Reflection.hasVar(event, "getPlayer")) {
+            player = Reflection.getVar(event, "getPlayer", OfflinePlayer.class);
+        }
 
-            // new implementation start
-            OfflinePlayer player = null;
-            if(Reflection.hasVar(event, "getWhoClicked")) {
-                player = Reflection.getVar(event, "getWhoClicked", OfflinePlayer.class);
-            } else if(Reflection.hasVar(event, "getPlayer")) {
-                player = Reflection.getVar(event, "getPlayer", OfflinePlayer.class);
-            }
+        if(player == null) player = Bukkit.getOfflinePlayer(UUID.randomUUID());
 
-            if(player == null) player = Bukkit.getOfflinePlayer(UUID.randomUUID());
+        // DonateCase actions
+        Case.executeActions(player, actions);
 
-            String temp = ActionManager.getByStart(action);
+        // DCEventManager actions
+        List<String> oldActions = actions.stream().filter(action -> action.startsWith("[invoke]")).collect(Collectors.toList());
 
-            if(temp != null) {
-                String context = action.replace(temp, "").trim();
-                CaseAction caseAction = ActionManager.getRegisteredAction(temp);
-                if (caseAction != null) {
-                    caseAction.execute(player, context, 0);
-                    continue;
-                }
-            }
-            // new implementation end
-
-            // old implementation start
+        for (String action : oldActions) {
             if (action.startsWith("[invoke]")) {
                 action = action.replaceFirst("\\[invoke] ", "");
                 Reflection.invokeMethodChain(event, action);
             }
-            // old implementation end
         }
     }
 
