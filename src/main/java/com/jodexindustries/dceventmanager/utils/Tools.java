@@ -108,14 +108,13 @@ public class Tools implements Listener {
         ArrayList<Class<? extends Event>> classes = getClasses();
         PluginManager pluginManager = Bukkit.getPluginManager();
 
-        int i = 0;
-
-        for (Class<? extends Event> clazz : classes) {
+        int i;
+        for (i = 0; i < classes.size(); i++) {
+            Class<? extends Event> clazz = classes.get(i);
             String event = clazz.getSimpleName();
             pluginManager.registerEvent(clazz, this, EventPriority.NORMAL,
                     new DCEventExecutor(event, this), main.getPlugin());
-            i++;
-            if(debug) main.getLogger().info("Event " + event + " registered");
+            if (debug) main.getLogger().info("Event " + event + " registered");
         }
 
         main.getLogger().info("Registered " + i + " events");
